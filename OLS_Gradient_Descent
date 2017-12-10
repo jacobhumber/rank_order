@@ -1,0 +1,70 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+d_path = '/Users/jacobhumber/Google Drive/Data Science/ML/Gradient_Descent/wine_data/'
+
+d = pd.read_csv(d_path+'winequality-white.csv', delimiter =';')
+
+################Simple Regression###############
+
+OLS1 = LinearRegression()
+
+X1 = np.array(d['pH']).reshape(-1,1)
+
+y1 = np.array(d['quality'])
+
+y1 = np.array([0, 1, 2])
+X1 = np.array([[0, 0], [1, 1], [2, 2]])
+
+
+OLS1.fit(X=X1, y=y1)
+
+sk_res = np.hstack((OLS1.intercept_,OLS1.coef_))
+
+###############Gradient Descent#####################
+
+#Parameters
+LHS = y1.reshape(len(y1),1)
+RHS = X1
+N = len(LHS)
+learn_rate = .1#.25
+tol = .1
+params = np.array([[1], [1], [1]])
+max_iter = 10000
+
+def gradient_descent(LHS, RHS, N, learn_rate, tol, params, max_iter):
+    #Append intercept
+    constant = np.ones((N, 1))
+    RHS = np.hstack((constant, RHS))
+    
+    #Define Gradient
+    def gradient(X, y, p):
+        grad_part1 = -2*np.dot(np.transpose(X),y)
+        grad_part2 = 2*np.dot(np.dot(np.transpose(X), X), p)
+        return((1/len(y))*(grad_part1 + grad_part2))
+    
+    #Define Gradient update
+    def param_update(p,lr,X,y):
+        return(p - lr*gradient(X, y, p))
+    
+    #Check it we're at optimia
+    old_params = params
+    params = param_update(params, learn_rate, RHS, LHS)
+    
+    if all(abs(params - old_params) <= tol):
+        return(params)
+    else:
+        iter = 1
+        while(any(abs(params - old_params)) > tol and iter < max_iter):
+            old_params = params
+            params = param_update(params, learn_rate, RHS, LHS)
+            iter += 1
+        return([params, iter])
+    
+myres = gradient_descent(LHS, RHS, N, learn_rate, tol, params, max_iter)
+
+print('my result' + str(myres))
+print('SK result' + str(sk_res))
+
+

@@ -1,0 +1,7 @@
+import pandas as pd
+import numpy as np
+
+loan_path = '/Users/jacobhumber/Google Drive/Data Science/Credit Scoring/lending-club-loan-data/'
+
+d = pd.read_csv(loan_path + loan.csv)
+

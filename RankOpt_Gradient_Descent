@@ -1,0 +1,48 @@
+X_pos = np.array([[2,3,1],[4,3,4],[4,0,1],[1,3,5]]).transpose()
+X_neg = np.array([[2,1,9],[3,2,5],[4,55,1],[3,3,2], [3,3,2], [3,3,1], [9,3,2]]).transpose()
+
+
+beta = np.array([[4,2,3]])
+
+def sig_fun(X):
+    return(X)
+
+
+def gradient(X_neg, X_pos, beta, matrix_calc = True):
+    Q = X_neg.shape[1]
+    M = X_neg.shape[0]
+    
+    Z = X_pos - X_neg
+
+    if(matrix_calc):    
+        rank_stat = sig_fun(np.dot(beta,Z))
+        res = np.dot(np.multiply(rank_stat,1-rank_stat) , Z.transpose())
+        return(res)
+    else:
+        res_list = []
+        for j in range(M):
+            res = 0
+            for i in range(Q):
+                rank_stat = sig_fun(np.dot(beta, Z[:,i].transpose()))
+                res = res + rank_stat*(1-rank_stat)*Z[j,i]
+            res_list.append(res)
+        return(res_list)
+        
+    
+def minority_shuffler(X_maj, X_min):
+    import ipdb; ipdb.set_trace()
+    '''Takes a minority matrix shuffles and '''
+    P = X_min.shape[1]
+    Q = X_maj.shape[1]
+    append_amt = Q - P
+    if(append_amt < 0):
+        return('Error: minority class has less observation than majority class')
+    np.random.shuffle(X_min.transpose())
+    X_min = np.vstack((X_min, X_min[:,range(append_amt)]))
+    return(X_min)
+    
+minority_shuffler(X_neg, X_pos)    
+
+import ipdb
+    
+
